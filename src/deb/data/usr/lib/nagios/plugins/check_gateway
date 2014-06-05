@@ -1,0 +1,54 @@
+#!/bin/bash
+PROGNAME=`/usr/bin/basename $0`
+PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
+REVISION="1.0"
+
+. $PROGPATH/utils.sh
+
+print_usage(){
+	echo "Usage: check_gateway <url> <user> <password>"
+}
+
+print_help(){
+        print_revision $PROGNAME $REVISION
+	echo ""
+	print_usage
+	echo "This plugin checks the state of a BayEOS Gateway"
+	echo "Send email to admin@bayceer.uni-bayreuth.de if you have questions"
+	echo "regarding the usage of this software."
+	exit 0
+}
+
+if [ $1 = "--help" ]; then
+    print_help
+    exit 0
+fi
+
+if [ $# -lt 3 ]; then
+    print_usage
+    exit $STATE_UNKNOWN
+fi
+
+xml=$(curl -s -S -m 10 -w "\n%{http_code}\n" -H "Accept: application/xml" -H "Content-Type: application/xml" --user $2:$3 $1)
+if [ $? != 0 ]; then
+    exit $STATE_UNKNOWN
+fi
+
+code=$(echo "$xml" | tail -1)
+if [ "$code" != "200" ]; then
+    echo "Error $code"
+    exit $STATE_UNKNOWN
+fi
+
+body=$(echo "$xml" | sed '$d')
+msg=$(echo "$body" | xmllint --xpath "/nagiosMessage/text/text()" -)
+if [ $? != 0 ]; then
+    exit $STATE_UNKNOWN
+fi
+
+stat=$(echo "$body" | xmllint --xpath "/nagiosMessage/status/text()" -)
+if [ $? != 0 ]; then
+    exit $STATE_UNKNOWN
+fi
+echo "$msg"
+exit $stat

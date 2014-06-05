@@ -1,0 +1,8 @@
+Package: [[name]]
+Version: [[version]]
+Section: server
+Priority: optional
+Architecture: all
+Depends: nagios3-common, nagios-plugins-common, libxml2-utils, curl
+Description: BayEOS Gateway Check
+Maintainer: oliver.archner@uni-bayreuth.de

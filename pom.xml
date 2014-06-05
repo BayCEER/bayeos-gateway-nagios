@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">  
+  <modelVersion>4.0.0</modelVersion>
+	
+  <groupId>de.unibayreuth.bayceer.bayeos</groupId>
+  <artifactId>bayeos-gateway-nagios</artifactId>  
+  <version>1.0.0</version>
+
+   <parent>
+    <groupId>de.unibayreuth.bayceer.bayeos</groupId>
+    <artifactId>bayeos-parent</artifactId>
+    <version>1.0.0</version>
+	<relativePath>../bayeos-parent/pom.xml</relativePath>
+
+  </parent>
+
+  
+  <properties>
+  	<publish.path>${publish.debian.path}</publish.path>
+  </properties>
+    <packaging>pom</packaging>
+  <dependencies>
+       
+  </dependencies>
+  
+   
+ <build>
+  <plugins>            
+      
+       <plugin>
+				<artifactId>jdeb</artifactId>
+				<groupId>org.vafer</groupId>
+				<version>1.1.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jdeb</goal>
+						</goals>
+						<configuration>
+							<deb>${project.build.directory}/${project.artifactId}-${project.version}.deb</deb>
+							<verbose>false</verbose>
+							<dataSet>
+								<data>
+									<src>${basedir}/src/deb/data</src>									
+									<type>directory</type>
+									<excludes>**/.svn/**</excludes>
+								</data>															
+							</dataSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> 
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo message="Copy to ${publish.path}" />																
+								<copy file="target/${project.name}-${project.version}.deb" todir="${publish.path}"/>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			     
+  </plugins>
+  </build>
+</project>

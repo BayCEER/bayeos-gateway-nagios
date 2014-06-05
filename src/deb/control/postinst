@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+chmod +x /usr/lib/nagios/plugins/check_gateway
+/etc/init.d/nagios3 reload
+
